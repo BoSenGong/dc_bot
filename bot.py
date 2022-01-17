@@ -11,19 +11,16 @@ intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 os.chdir(r'C:\discord_bot\whitelist')
 
-
 #bot ready event
 @bot.event
 async def on_ready():
     print(">>> AcaPunks Bot is online. <<<")
-
 
 #member join event
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(jdata['welcome_channel'])
     await channel.send(f"{member} join!")
-
 
 #message event###
 @bot.event
@@ -54,6 +51,7 @@ async def on_message(message):
         await level_up(users,message.author, message.channel)
     with open('users.json','w') as f :
         json.dump(users,f)
+    await bot.process_commands(message)
 
 async def update_data(users, user):
     if not str(user.id) in users:
@@ -72,12 +70,7 @@ async def level_up(users,user,channel):
         channel = bot.get_channel(jdata['level_channel']) 
         await channel.send('{} has leveled up to level {}'.format(user.mention,lvl_end))
         users[str(user.id)]['level'] = lvl_end
-###Count level and experience end###        
-
-@bot.command()
-async def ping(ctx):
-    print('test')
-    await ctx.send(f'{round(bot.latency*1000)} (ms)')
+###Count level and experience end###   
 
 for filename in os.listdir('./cmds'):
     if filename.endswith('.py'):
