@@ -8,13 +8,13 @@ with open('setting.json','r',encoding='utf8') as jfile:
     setting=json.load(jfile)
 
 class Main(Cog_Extension):
-    ###### commands for all users ######
+    ### commands for all users ###
     ### ping ###
     @commands.command()
     async def ping(self, ctx):
         await ctx.send(f'ping: {round(self.bot.latency*1000)} (ms)')
 
-    ###### commands for all users ######
+    ### commands for all users ###
     ### level ###
     @commands.command()    
     async def level(self, ctx):
@@ -31,7 +31,7 @@ class Main(Cog_Extension):
             embed.set_footer(text="Chat more to level up!\n")
             await ctx.message.channel.send(embed=embed)
 
-    ###### commands for all users ######
+    ### commands for all users ###
     ### rank ###
     @commands.command()
     async def rank(self, ctx):
@@ -39,31 +39,25 @@ class Main(Cog_Extension):
         #if (ctx.message.channel == setting['level_channel']):
             with open('users.json', 'r') as f:
                 users = json.load(f)
-                leaderboard = {}
-                total=[]
-                for user in users:
-                    name = int(user)
-                    total_amt = users[str(user.id)]['experience']
-                    leaderboard[total_amt] = name
-                    total.append(total_amt)
-                total = sorted(total,reverse=True)
-                print(total)
-
-    ###### commands for admin only ######
+                
+    ### commands for admin only ###
     ### add exp ###
     @commands.command()
+    @commands.has_permissions(administrator=True)
     async def add(self, ctx):
         print('add exp command')
 
-    ###### commands for admin only ######
+    ### commands for admin only ###
     ### parse history messages and give exp ###
     @commands.command()
+    @commands.has_permissions(administrator=True)
     async def history(self, ctx):
         print('parsing history messages')
 
-    ###### commands for admin only ######
+    ### commands for admin only ###
     ### contest rating system ###
     @commands.command()
+    @commands.has_permissions(administrator=True)
     async def rate(self, ctx):
         print('rating command')
 
