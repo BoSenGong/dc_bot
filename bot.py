@@ -15,7 +15,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 os.chdir(r'C:\discord_bot\whitelist')
 for filename in os.listdir('./module'):
     if filename.endswith('.py'):
-        bot.load_extension(f'cmds.{filename[:-3]}')  
+        bot.load_extension(f'module.{filename[:-3]}')  
 
 if __name__ == "__main__":
     bot.run(setting['token'])
