@@ -49,7 +49,7 @@ async def on_message(message):
             await message.delete()
             await message.channel.send(f"{message.author.mention} Please leave your address only.")   
 
-    #Count level and experience
+#Count level and experience
     with open('users.json','r') as f :
         users = json.load(f)
         await update_data(users, message.author)
@@ -59,13 +59,13 @@ async def on_message(message):
         json.dump(users,f)
     await bot.process_commands(message)
 
-async def update_data(users, user):
+async def update_data(users, user:discord.Member):
     if not str(user.id) in users:
         users[str(user.id)] ={}
         users[str(user.id)]['experience'] = 0
         users[str(user.id)]['level'] = 1 
 
-async def add_experience(users,user,exp):
+async def add_experience(users,user:discord.Member,exp:int):
     users[str(user.id)]['experience'] += exp
 
 async def level_up(users,user,channel):
