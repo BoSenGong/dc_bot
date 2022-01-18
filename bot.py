@@ -2,29 +2,33 @@ import os
 import json
 import discord
 from discord.ext import commands
-os.chdir(r'C:\discord_bot\whitelist')
-for filename in os.listdir('./cmds'):
-    if filename.endswith('.py'):
-        bot.load_extension(f'cmds.{filename[:-3]}')
+
 with open('setting.json','r',encoding='utf8') as jfile:
     setting=json.load(jfile)
 
+### bot setting and permission grant ###
 intents = discord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-### bot ready event ###
+### load other modules in cmds directory ###
+os.chdir(r'C:\discord_bot\whitelist')
+for filename in os.listdir('./cmds'):
+    if filename.endswith('.py'):
+        bot.load_extension(f'cmds.{filename[:-3]}')
+
+### bot on ready event ###
 @bot.event
 async def on_ready():
     print(">>> AcaPunks Bot is online. <<<")
 
-### member join event ###
+### on member join event ###
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(setting['welcome_channel'])
     await channel.send(f"{member} join!")
 
-### message event ###
+### on message event ###
 @bot.event
 async def on_message(message):
     #check message.author != bot
