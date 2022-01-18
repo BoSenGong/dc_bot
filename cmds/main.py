@@ -43,8 +43,25 @@ class Main(Cog_Extension):
     ### add exp ###
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def add(self, ctx):
-        print('add exp command')
+    async def add(self, ctx, member:discord.Member, exp:int):
+        with open('users.json', 'r') as f:
+             users = json.load(f)
+             await add_exp(users, member, exp)
+             await check_level(users, member, ctx.message.channel)
+        with open('users.json','w') as f :
+            json.dump(users,f)
+
+async def add_exp(users,member:discord.Member,exp:int):
+    users[str(member.id)]['experience'] += exp
+
+async def check_level(users,user:discord.Member,channel:int):
+    experience = users[str(user.id)]['experience']
+    lvl_start = users[str(user.id)]['level']
+    lvl_end = int(experience**(1/4))
+    if lvl_start < lvl_end:
+        await channel.send('{} has leveled up to level {}'.format(user.mention,lvl_end))
+        users[str(user.id)]['level'] = lvl_end
+
 
     ### commands for admin only ###
     ### parse history messages and give exp ###
