@@ -30,7 +30,7 @@ class Main(Cog_Extension):
             embed.set_footer(text="Chat more to level up!\n")
             await ctx.message.channel.send(embed=embed)
 
-    ### commands for all users ###
+    ### command for all users ###
     ### rank ###
     @commands.command()
     async def rank(self, ctx):
@@ -39,7 +39,7 @@ class Main(Cog_Extension):
             with open('users.json', 'r') as f:
                 users = json.load(f)
                 
-    ### commands for admin only ###
+    ### command for admin only ###
     ### add exp ###
     @commands.command()
     @commands.has_permissions(administrator=True)
@@ -63,14 +63,14 @@ async def check_level(users,user:discord.Member,channel:int):
         users[str(user.id)]['level'] = lvl_end
 
 
-    ### commands for admin only ###
+    ### command for admin only ###
     ### parse history messages and give exp ###
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def history(self, ctx):
         print('parsing history messages')
 
-    ### commands for admin only ###
+    ### command for admin only ###
     ### contest rating system ###
     @commands.command()
     @commands.has_permissions(administrator=True)
