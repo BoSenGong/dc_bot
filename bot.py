@@ -13,7 +13,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 ### load other modules in cmds directory ###
 os.chdir(r'C:\discord_bot\whitelist')
-for filename in os.listdir('./cmds'):
+for filename in os.listdir('./module'):
     if filename.endswith('.py'):
         bot.load_extension(f'cmds.{filename[:-3]}')  
 
