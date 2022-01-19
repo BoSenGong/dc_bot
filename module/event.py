@@ -11,7 +11,7 @@ class Event(Cog_Extension):
     ### bot on ready event ###
     @commands.Cog.listener()
     async def on_ready(self):
-        print(">>> AcaPunks Bot is online. <<<")
+        print(">>> Bot is online. <<<")
 
     ### on member join event ###
     @commands.Cog.listener()
