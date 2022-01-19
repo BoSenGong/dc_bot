@@ -3,6 +3,8 @@ import json
 from core.classes import Cog_Extension
 import discord
 from discord.ext import commands
+from tinydb import TinyDB, Query
+from tinydb.operations import add
 
 with open('setting.json','r',encoding='utf8') as jfile:
     setting=json.load(jfile)
@@ -26,21 +28,23 @@ class Event(Cog_Extension):
         if message.author == self.bot.user:
             return
 
-        #Listen to whitelist channel then copy address
-        if (message.channel.id == setting['whitelist_channel']):        
-            #Check address
-            if message.content.startswith('0x'):  
-                msg = message.content
-                await message.delete()
-                await message.channel.send(f"{message.author.mention} address received.")
-                #Go to private address channel
-                channel = self.bot.get_channel(setting['whitelist_private_channel']) 
-                await channel.send(f"{message.author.mention}  "+msg)
-            else:
-                await message.delete()
-                await message.channel.send(f"{message.author.mention} Please leave your address only.")   
+        #Listen to whitelist channel then copy address to private
+        if (message.channel.id == setting['whitelist_channel']):
+            await copy_address(self, message)
 
         #Count level and experience
+        db = TinyDB('./users.json')
+        user = Query()
+        if not db.search(user.id == message.author.id):
+            #insert a new user with id
+            db.insert({"id": message.author.id, "exp":0,"level":1}) 
+        else:
+            #old user add exp with message length
+            db.update(add("exp",len(message.content)), user.id == message.author.id)
+            #then check level
+
+
+'''        
         with open('users.json','r') as f :
             users = json.load(f)
             await update_data(self,users, message.author)
@@ -67,6 +71,20 @@ async def level_up(self,users,user,channel):
         await channel.send('{} has leveled up to level {}'.format(user.mention,lvl_end))
         users[str(user.id)]['level'] = lvl_end
 #Count level and experience end 
-    
+'''
+
+async def copy_address(self, message):
+    #Check address
+    if message.content.startswith('0x'):  
+        msg = message.content
+        await message.delete()
+        await message.channel.send(f"{message.author.mention} address received.")
+        #Go to private address channel
+        channel = self.bot.get_channel(setting['whitelist_private_channel']) 
+        await channel.send(f"{message.author.mention}  "+msg)
+    else:
+        await message.delete()
+        await message.channel.send(f"{message.author.mention} Please leave your address only.")   
+
 def setup(bot):
     bot.add_cog(Event(bot))

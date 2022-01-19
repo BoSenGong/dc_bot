@@ -1,8 +1,10 @@
 import os
-import json
-from core.classes import Cog_Extension
 import discord
 from discord.ext import commands
+from core.classes import Cog_Extension
+import json
+from tinydb import TinyDB, Query
+from tinydb.operations import add
 
 with open('setting.json','r',encoding='utf8') as jfile:
     setting=json.load(jfile)
@@ -20,15 +22,19 @@ class Command(Cog_Extension):
     async def level(self, ctx):
         #check channel
         #if (ctx.message.channel == setting['level_channel']):
-        with open('users.json','r') as f :
-            users = json.load(f)
-        embed = discord.Embed(Title=f"**{ctx.message.author}'s Rang**",Description=f"test1", color=0x0091ff)
-        embed.set_thumbnail(url=f"{ctx.message.author.avatar_url}")
-        embed.add_field(name=f"**{ctx.message.author}'s Rang**", value="💪  ", inline=False)
-        embed.add_field(name="Level", value=f"**{users[str(ctx.message.author.id)]['level']}**", inline=True)
-        embed.add_field(name="Experience", value=f"**{str(int(users[str(ctx.message.author.id)]['experience']))}**",inline=True)
-        embed.set_footer(text="Chat more to level up!\n")
-        await ctx.message.channel.send(embed=embed)
+        db = TinyDB('./users.json')
+        user = Query()
+        await print_level(ctx, db, user)
+
+async def print_level(ctx, db, user):
+    #set embeded message with user level and exp
+    embed = discord.Embed(Title=f"**{ctx.message.author}'s Rang**",Description=f"test1", color=0x0091ff)
+    embed.set_thumbnail(url=f"{ctx.message.author.avatar_url}")
+    embed.add_field(name=f"**{ctx.message.author}'s Rang**", value="💪  ", inline=False)
+    embed.add_field(name="Level", value=f"**{db.search(user.id == ctx.message.author.id)[0]['level']}**", inline=True)
+    embed.add_field(name="Experience", value=f"**{db.search(user.id == ctx.message.author.id)[0]['exp']}**",inline=True)
+    embed.set_footer(text="Chat more to level up!\n")
+    await ctx.message.channel.send(embed=embed)
 
     ### command for all users ###
     ### rank ###
@@ -44,14 +50,17 @@ class Command(Cog_Extension):
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def add(self, ctx, member:discord.Member, exp:int):
-        with open('users.json', 'r') as f:
-            users = json.load(f)
-            await add_exp(users, member, exp)
+        db = TinyDB('./users.json')
+        user=Query()
+        db.update(add("exp",exp), user.id == member.id)
+        #then check level
+
+        '''      
             await check_level(users, member, ctx.message.channel)
         with open('users.json','w') as f :
             json.dump(users,f)
 
-async def add_exp(users,member:discord.Member,exp:int):
+async def add_exp(User,member:discord.Member,exp:int):
     users[str(member.id)]['experience'] += exp
 
 async def check_level(users,user:discord.Member,channel:int):
@@ -61,7 +70,7 @@ async def check_level(users,user:discord.Member,channel:int):
     if lvl_start < lvl_end:
         await channel.send('{} has leveled up to level {}'.format(user.mention,lvl_end))
         users[str(user.id)]['level'] = lvl_end
-
+'''
 
     ### command for admin only ###
     ### parse history messages and give exp ###
